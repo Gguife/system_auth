@@ -5,16 +5,21 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsnd --respawn src/server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "migrate": "sequelize db:migrate",
+    "migrate:undo": "seuqelize db:migrate:undo"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mysql2": "^3.9.7",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
+    "@types/sequelize": "^4.28.20",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
   }
