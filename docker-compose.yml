@@ -9,7 +9,10 @@ services:
       - '8080:8080'
     depends_on:
       - mysql 
-  
+    volumes:
+      - .:/usr/app  # Monta o diretório atual do host no contêiner
+      - /usr/app/node_modules  # Monta o diretório node_modules do contêiner para evitar problemas de permissão
+
   mysql:
     image: mysql:latest
     environment:

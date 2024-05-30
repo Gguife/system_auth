@@ -1,5 +1,5 @@
 # Usando a imagem do Node.js versão 14 Alpine como base
-FROM node:14-alpine
+FROM node:16-alpine
 
 # Definindo o diretório de trabalho dentro do contêiner
 WORKDIR /usr/app
