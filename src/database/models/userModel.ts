@@ -14,7 +14,7 @@ class UserModel extends Model<UserInterface, UserCreationAttributes> implements 
 
   //Timestamps 
   public readonly createdAt?: Date;
-  public readonly updateAt?: Date;
+  public readonly updatedAt?: Date;
 }
 
 
@@ -35,7 +35,7 @@ UserModel.init(
       unique: true
     },
     password:{
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(100),
       allowNull: false
     },
     createdAt:{
