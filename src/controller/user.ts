@@ -3,7 +3,7 @@ import UserModel from "../database/models/userModel";
 
 const findAllUsers = async (req: Request, res: Response) => {
   try{
-    const users = UserModel.findAll();
+    const users = await UserModel.findAll();
     return res.status(200).json({users});
   }catch(error){
     console.log("Error finding all users:", error);
@@ -23,11 +23,12 @@ const findOneUser = async (req: Request, res: Response) => {
 
 const addUser = async (req: Request, res: Response) => {
   try{
-    UserModel.create({
+    const newUser = await UserModel.create({
       name: req.body.name,
       password: req.body.password,
       email: req.body.email
-    }).then((result) => res.json(result));
+    })
+    return res.status(201).json(newUser);
   }catch(error){
     console.log("Error finding all users:", error);
     return res.status(500).json({error: 'Internal server error.'});
