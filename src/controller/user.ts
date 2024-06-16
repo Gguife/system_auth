@@ -7,7 +7,7 @@ const findAllUsers = async (req: Request, res: Response) => {
     return res.status(200).json({users});
   }catch(error){
     console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Internal server error.'});
+    return res.status(500).json({error: 'Error finding all users.'});
   }
 }
 
@@ -16,8 +16,8 @@ const findOneUser = async (req: Request, res: Response) => {
     const user = await UserModel.findByPk(req.params.id);
     return res.status(200).json({user})
   }catch(error){
-    console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Internal server error.'});
+    console.log("Error finding user:", error);
+    return res.status(500).json({error: 'Error finding user.'});
   }
 }
 
@@ -30,8 +30,8 @@ const addUser = async (req: Request, res: Response) => {
     })
     return res.status(201).json(newUser);
   }catch(error){
-    console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Internal server error.'});
+    console.log("Error adding user:", error);
+    return res.status(500).json({error: 'Error adding user.'});
   }
 }
 
@@ -45,8 +45,8 @@ const updateUser = async (req: Request, res: Response) => {
       }
     }).then((result) => res.json(result));
   }catch(error){
-    console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Internal server error.'});
+    console.log("Error updating user:", error);
+    return res.status(500).json({error: 'Error updating user.'});
   }
 }
 
@@ -58,8 +58,8 @@ const removeUser = async (req: Request, res: Response) => {
       }
     }).then((result) => res.json(result));
   }catch(error){
-    console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Internal server error.'});
+    console.log("Error removing user:", error);
+    return res.status(500).json({error: 'Error removing user.'});
   }
 }
 
