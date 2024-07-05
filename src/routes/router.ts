@@ -8,6 +8,6 @@ route.get('/account/:id', user.findOneUser);
 route.post('/account/create', user.addUser);
 route.put('/account/update/:id', user.updateUser);
 route.delete('/account/:id', user.removeUser);
-
+route.post('/login', user.loginUser);
 
 export default route;
