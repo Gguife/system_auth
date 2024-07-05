@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../database/models/userModel";
+import userService from "../service/userService";
 
 const findAllUsers = async (req: Request, res: Response) => {
   try{
@@ -23,11 +24,20 @@ const findOneUser = async (req: Request, res: Response) => {
 
 const addUser = async (req: Request, res: Response) => {
   try{
+    const password = req.body.password;
+
+    if(!userService.validatePassword(password)){
+      return res.status(400).json({error: 'Password is not strong enough.'})
+    }
+
+    const hashedPassword = await userService.hashPassword(password);
+
     const newUser = await UserModel.create({
       name: req.body.name,
-      password: req.body.password,
+      password: hashedPassword,
       email: req.body.email
     })
+
     return res.status(201).json(newUser);
   }catch(error){
     console.log("Error adding user:", error);
@@ -37,8 +47,16 @@ const addUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try{
+    const password = req.body.password;
+
+    if(!userService.validatePassword(password)){
+      return res.status(400).json({error: 'Password is not strong enough.'})
+    }
+
+    const hashedPassword = await userService.hashPassword(password);
+
     UserModel.update({
-      password: req.body.password,
+      password: hashedPassword,
     },{
       where:{
         id: req.params.id
@@ -63,4 +81,32 @@ const removeUser = async (req: Request, res: Response) => {
   }
 }
 
-export default { findAllUsers, findOneUser, addUser, updateUser, removeUser };
+
+const loginUser = async (req: Request, res: Response) => {
+  try{
+    const user = await UserModel.findOne({
+      where: {
+        email: req.body.email
+      }
+    });
+
+    if(user){
+      const isMatch = await userService.comparePassword(req.body.password, user.password)
+      
+      if(isMatch){
+        return res.status(200).json({message: 'Login sucessful!', user});
+      }else{
+        return res.status(401).json({error: 'Invalid credentials!'})
+      }
+
+    }else{
+      return res.status(404).json({error: 'User not found.'})
+    }
+
+  }catch(error){
+    console.log("Error logging in:", error);
+    return res.status(500).json({error: 'Error logging in.'})
+  }
+}
+
+export default { findAllUsers, findOneUser, addUser, updateUser, removeUser, loginUser };
