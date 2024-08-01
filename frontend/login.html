@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <title>Login Auth</title>
+</head>
+<body>
+  <div class="login-form">
+    <form id="loginForm">
+      <h1>Sign In</h1>
+  
+      <label for="">Email</label>
+      <input type="email" name="email" id="email" placeholder="gguife747@gmail.com">
+  
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="********">
+
+      <button class="login-button" type="submit">Next</button>      
+      
+      <div class="forgot-link">
+        <a href="">Forgot password?</a>
+      </div>
+
+      <div class="division">
+        <div class="line"></div>
+        <p>or</p>
+        <div class="line"></div>
+      </div>
+
+      <div class="social-access">
+        <img src="./images/gmail.png" alt="google logo">
+        <img src="./images/face.png" alt="facebook logo">
+      </div>
+
+    </form>
+
+    <div class="cards-msg">
+      <div class="error-card"></div>
+    </div>
+
+    <p class="sign-pages">Haven't signed up yet? <a href="./cadastro.html">Register</a></p>
+
+    <footer>@gguife</footer>
+
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementsByClassName("error-card")[0];
+
+        const data = {
+          email: emailInput.value,
+          password: passwordInput.value
+        }
+
+        const displayMessage = (element, message, displayTime) => {
+          element.textContent = message;
+          element.style.display = 'flex';
+
+          setTimeout(() => {
+            element.style.display = 'none';
+          }, displayTime)
+        }
+
+        const validateFields = (data) => {
+          if(!data.email || !data.password){
+            displayMessage(errorMsg, 'Alls fields are required', 1500);
+            throw new Error('Alls fields are required.');
+          }
+        }
+
+        const sendLoginRequest = async () => {
+          try{
+            const response = await fetch('http://localhost:8080/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            
+            return response
+          }catch(e){
+            const errorData = await response.json();
+            handleError(new Error(errorData.error));
+          }
+        }
+
+        const handleSuccess = async (response) => {
+          if(response.status == 200){
+            alert('Login was successful!');
+           } else {
+            const errorData = await response.json();
+            handleError(new Error(errorData.error))
+           }
+        }
+
+        const handleError = (error) => {
+          console.error('Error', error);
+          displayMessage(errorMsg, error.message, 1500);
+        }
+
+        async function loginAccess() {
+          try{
+            validateFields(data);
+            const response = await sendLoginRequest(data);
+            handleSuccess(response);
+          }catch(e){
+            handleError(e);
+          }
+        }
+
+        loginAccess();
+      })
+    </script>
+  </div>
+</body>
+</html>

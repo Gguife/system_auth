@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  background-color: #333;
+  font-family: "Poppins", sans-serif;
+  color: #FFF;
+  height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./images/back.jpg');
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.6; 
+  z-index: -1;
+}
+
+
+/*GERAL*/
+.login-form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+form{
+  background-color: #0eaff9;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  max-width: 500px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+form h1{
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+form input{
+  height: 2rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  border: none;
+  padding: .5rem;
+}
+
+form label{
+  padding: 0 .2rem;
+}
+
+::placeholder{
+  padding: 0 .1.5rem;  
+}
+
+form button{
+  background-color: orange;
+  border: none;
+  padding: .8rem 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cards-msg{
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+}
+
+.verify-card, .error-card{
+  padding: .5rem 5rem;
+  border-radius: 5px;
+  color: #FFF;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cards-msg .verify-card{
+  background-color: rgb(1, 218, 1);
+  display: none;
+}
+.cards-msg .error-card{
+  background-color: rgb(126, 4, 4);
+  display: none;
+}
+
+.sign-pages{
+  margin-top: 1rem;
+}
+.sign-pages a {
+  color: #0eaff9;
+}
+
+footer {
+  margin-top: 2rem;
+  color: #DDD;
+  font-size: .8rem;
+}
+
+/*LOGIN*/
+form .division{
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  font-size: .7rem;
+}
+
+form .division .line{
+  max-width: 150px;
+  width: 100%;
+  height: 1px;
+  background-color: #FFF;
+}
+
+form .social-access{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+form .social-access img{
+  width: 30px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+form .access-butons{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+form .access-butons .login-button{
+  padding: .4rem 4rem;
+  border-radius: 4px;  
+}
+form .access-butons a{
+  color: #FFF;
+  font-size: .9rem; 
+}
+form .forgot-link{
+  display: flex;
+  justify-content: end;
+  padding: .5rem .5rem 0 0;
+}
+form .forgot-link a{
+  cursor: pointer;
+  font-size: .8rem;
+}

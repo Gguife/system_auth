@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <title>Register Auth</title>
+</head>
+<body>
+  <div class="login-form">
+    <form id="registerForm">
+      <h1>Sign Up</h1>
+  
+      <label for="name">Name</label>
+      <input type="name" name="name" id="name" placeholder="Guilherme Gomes">
+
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="gguife747@gmail.com">
+  
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="********">
+
+      <label for="confirmPassword">Confirm password</label>
+      <input type="password" name="confirmPassword" id="confirmPassword" placeholder="********">
+
+      <span id="error-message"></span>
+
+      <button type="submit">Create account</button>
+    </form>
+
+    <div class="cards-msg">
+      <div class="verify-card"></div>
+      <div class="error-card"></div>
+    </div>
+
+    <p class="sign-pages">Already signed up? <a href="./login.html">Go to login</a></p>
+
+    <footer>@gguife</footer>
+  
+  </div>
+
+  <script> 
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const verifyMsg = document.getElementsByClassName("verify-card")[0];
+      const errorMsg = document.getElementsByClassName("error-card")[0];
+
+      const data = {
+        name: nameInput.value,
+        email: emailInput.value,
+        password: passwordInput.value
+      };
+
+      const displayMessage = (element, message, displayTime) => {
+        element.textContent = message;
+        element.style.display = 'flex';
+
+        setTimeout(() => {
+          element.style.display = 'none';
+        }, displayTime);
+      }
+
+      const validateFields = (data) => {
+        if (!data.name || !data.email || !data.password || !confirmPasswordInput.value) {
+          displayMessage(errorMsg, 'Alls fields are required', 1500)
+          throw new Error('All fields are required.');
+        }
+      }
+
+      const validatePassword = (password, confirmPassword) => {
+        if (password !== confirmPassword) {
+          displayMessage(errorMsg, 'Passwords do not match.', 1500)
+          throw new Error('Passwords do not match.');
+        }
+      }
+
+      const sendCreateAccountRequest = async () => {
+        try{
+          const response = await fetch('http://localhost:8080/account/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        return response;
+        }catch(error){
+          console.error('Error during fetch', error);
+          throw new Error('Falied to create account');
+        }
+      }
+
+      const handleSuccess = async (response) => {
+        if(response.status === 201){
+          displayMessage(verifyMsg, 'Account created suscessfully!', 1500)
+          nameInput.value = '';
+          emailInput.value = '';
+          passwordInput.value = '';
+          confirmPasswordInput.value = '';
+          errorMsg.style.display = 'none';
+        } else {
+          const errorData = await response.json();
+          handleError(new Error(errorData.error));
+        }
+      }
+      
+      const handleError = (error) => {
+        console.error('Error:', error);
+        displayMessage(errorMsg, error.message, 1500);
+        verifyMsg.style.display = 'none';
+      }
+
+      async function createAccount(data) {
+        try {
+          validateFields(data); 
+          validatePassword(passwordInput.value, confirmPasswordInput.value);
+          const response = await sendCreateAccountRequest(data);
+          handleSuccess(response); 
+        } catch (error) {
+          handleError(error);
+        }
+      }
+
+      createAccount(data);  
+    });
+  </script>
+</body>
+</html>
