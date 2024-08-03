@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import validator from 'validator';
+import UserModel from 'database/models/userModel';
 
 const saltRounds = 10;
 
@@ -32,7 +33,8 @@ class UserService {
     return isStrong;
   }
 
-  recordFailedAttempt(email: string): void {
+  recordFailedAttempt(user: UserModel): void {
+    const email = user.email;
     this.failedLoginAttempts[email] = (this.failedLoginAttempts[email] || 0) + 1;
   
     if(this.failedLoginAttempts[email] >= this.maxAttempts){
@@ -41,12 +43,13 @@ class UserService {
     }
   }
 
-  isLockedOut(email: string): { locked: boolean, timeReamining?: number } {
+  isLockedOut(user: UserModel): { locked: boolean } {
+    const email = user.email;
     const lockoutExpiration = this.lockoutTime[email];
     if(lockoutExpiration > Date.now()){
-      return {locked: true, timeReamining: lockoutExpiration - Date.now()}
+      return { locked: true }
     }
-    return {locked: false};
+    return { locked: false };
   }
 }
 

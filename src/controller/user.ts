@@ -90,17 +90,25 @@ const loginUser = async (req: Request, res: Response) => {
       }
     });
 
+    if(!user){
+      return res.status(404).json({message: "User not found."});
+    }
+
+    const lockoutStatus = userService.isLockedOut(user);
+    if(lockoutStatus.locked){
+      return res.status(429).json({message: 'Too many login attempts. Please try again later.'})
+    }
+
     if(user){
       const isMatch = await userService.comparePassword(req.body.password, user.password)
       
       if(isMatch){
         return res.status(200).json({message: 'Login sucessful!', user});
       }else{
+        userService.recordFailedAttempt(user);
         return res.status(401).json({error: 'Invalid credentials!'})
       }
 
-    }else{
-      return res.status(404).json({error: 'User not found.'})
     }
 
   }catch(error){
