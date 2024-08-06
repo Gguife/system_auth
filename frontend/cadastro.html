@@ -104,6 +104,7 @@
           passwordInput.value = '';
           confirmPasswordInput.value = '';
           errorMsg.style.display = 'none';
+          window.location.href = 'login.html';
         } else {
           const errorData = await response.json();
           handleError(new Error(errorData.error));
