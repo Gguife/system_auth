@@ -1,5 +1,9 @@
 <h1 align="center" style="font-weight: bold;">Authentication System 💻</h1>
 
+<div align="center">
+  <img src="frontend/images/loginReadme.png" width="60%" style="border-radius: 10px;" alt="" />
+</div>
+
 <p align="center">
  <a href="#tech">Technologies</a> • 
  <a href="#started">Getting Started</a> • 
@@ -80,7 +84,7 @@ How to start project
 
 
   <a href="#">
-    <img src="https://avatars.githubusercontent.com/u/86894003?s=400&u=a746d6608412016a18af1980967dc9ffbbc8457c&v=4" width="100px;" alt="Guilherme Gomes Profile picture"/><br>
+    <img src="frontend//images/logo.png" width="100px;" alt="Guilherme Gomes Profile picture"/><br>
     <sub>
       <b>Guilherme Gomes</b>
     </sub>
