@@ -55,13 +55,19 @@ const updateUser = async (req: Request, res: Response) => {
 
     const hashedPassword = await userService.hashPassword(password);
 
-    UserModel.update({
+    const [affectedRows] = await UserModel.update({
       password: hashedPassword,
-    },{
-      where:{
+    }, {
+      where: {
         id: req.params.id
       }
-    }).then((result) => res.json(result));
+    });
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User updated successfully.' });
   }catch(error){
     console.log("Error updating user:", error);
     return res.status(500).json({error: 'Error updating user.'});
@@ -70,50 +76,31 @@ const updateUser = async (req: Request, res: Response) => {
 
 const removeUser = async (req: Request, res: Response) => {
   try{
-    UserModel.destroy({
+    const result = await UserModel.destroy({
       where:{
         id: req.params.id
       }
-    }).then((result) => res.json(result));
-  }catch(error){
+    })
+
+    if (result === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User removed successfully.' });
+  } catch (error) {
     console.log("Error removing user:", error);
-    return res.status(500).json({error: 'Error removing user.'});
+    return res.status(500).json({ error: 'Error removing user.' });
   }
 }
 
 
 const loginUser = async (req: Request, res: Response) => {
-  try{
-    const user = await UserModel.findOne({
-      where: {
-        email: req.body.email
-      }
-    });
-
-    if(!user){
-      return res.status(404).json({message: "User not found."});
-    }
-
-    const lockoutStatus = userService.isLockedOut(user);
-    if(lockoutStatus.locked){
-      return res.status(429).json({message: 'Too many login attempts. Please try again later.'})
-    }
-
-    if(user){
-      const isMatch = await userService.comparePassword(req.body.password, user.password)
-      
-      if(isMatch){
-        return res.status(200).json({message: 'Login sucessful!', user});
-      }else{
-        userService.recordFailedAttempt(user);
-        return res.status(401).json({error: 'Invalid credentials!'})
-      }
-
-    }
-
-  }catch(error){
+  try {
+    const user = req.user; 
+    res.status(200).json({ message: 'Login successful!', user });
+  } catch (error) {
     console.log("Error logging in:", error);
-    return res.status(500).json({error: 'Error logging in.'})
+    res.status(500).json({ error: 'Error logging in.' });
   }
 }
 
