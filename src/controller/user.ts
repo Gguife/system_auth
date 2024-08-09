@@ -1,42 +1,35 @@
 import { Request, Response } from "express";
 import UserModel from "../database/models/userModel";
-import userService from "../service/userService";
+import passwordService from "service/passwordService";
 
-const findAllUsers = async (req: Request, res: Response) => {
-  try{
-    const users = await UserModel.findAll();
-    return res.status(200).json({users});
-  }catch(error){
-    console.log("Error finding all users:", error);
-    return res.status(500).json({error: 'Error finding all users.'});
-  }
-}
-
-const findOneUser = async (req: Request, res: Response) => {
+const getUser = async (req: Request, res: Response) => {
   try{
     const user = await UserModel.findByPk(req.params.id);
-    return res.status(200).json({user})
+    
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    
+    return res.status(200).json({user});
   }catch(error){
     console.log("Error finding user:", error);
     return res.status(500).json({error: 'Error finding user.'});
   }
 }
 
-const addUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
   try{
-    const password = req.body.password;
+    const { name, email, password } = req.body;
 
-    if(!userService.validatePassword(password)){
+    if(!passwordService.validatePassword(password)){
       return res.status(400).json({error: 'Password is not strong enough.'})
     }
 
-    const hashedPassword = await userService.hashPassword(password);
+    const hashedPassword = await passwordService.hashPassword(password);
 
     const newUser = await UserModel.create({
-      name: req.body.name,
+      name,
       password: hashedPassword,
-      email: req.body.email
-    })
+      email
+    });
 
     return res.status(201).json(newUser);
   }catch(error){
@@ -45,76 +38,18 @@ const addUser = async (req: Request, res: Response) => {
   }
 }
 
-const updateUser = async (req: Request, res: Response) => {
-  try{
-    const password = req.body.password;
-
-    if(!userService.validatePassword(password)){
-      return res.status(400).json({error: 'Password is not strong enough.'})
-    }
-
-    const hashedPassword = await userService.hashPassword(password);
-
-    UserModel.update({
-      password: hashedPassword,
-    },{
-      where:{
-        id: req.params.id
-      }
-    }).then((result) => res.json(result));
-  }catch(error){
-    console.log("Error updating user:", error);
-    return res.status(500).json({error: 'Error updating user.'});
-  }
-}
-
-const removeUser = async (req: Request, res: Response) => {
-  try{
-    UserModel.destroy({
-      where:{
-        id: req.params.id
-      }
-    }).then((result) => res.json(result));
-  }catch(error){
-    console.log("Error removing user:", error);
-    return res.status(500).json({error: 'Error removing user.'});
-  }
-}
-
 
 const loginUser = async (req: Request, res: Response) => {
   try{
-    const user = await UserModel.findOne({
-      where: {
-        email: req.body.email
-      }
-    });
-
-    if(!user){
-      return res.status(404).json({message: "User not found."});
+    if (!req.user) {
+      return res.status(401).json({ error: 'User not authenticated.' });
     }
 
-    const lockoutStatus = userService.isLockedOut(user);
-    if(lockoutStatus.locked){
-      return res.status(429).json({message: 'Too many login attempts. Please try again later.'})
-    }
-
-    if(user){
-      const isMatch = await userService.comparePassword(req.body.password, user.password)
-      
-      if(isMatch){
-        return res.status(200).json({message: 'Login sucessful!', user});
-      }else{
-        userService.recordFailedAttempt(user);
-        return res.status(401).json({error: 'Invalid credentials!'})
-      }
-
-    }
-
+    res.status(200).json({ message: 'Login successful!', user: req.user });
   }catch(error){
     console.log("Error logging in:", error);
     return res.status(500).json({error: 'Error logging in.'})
   }
 }
 
-export default { findAllUsers, findOneUser, addUser, updateUser, removeUser, loginUser };
+export default { getUser, createUser, loginUser };
