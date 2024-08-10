@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../database/models/userModel";
-import passwordService from "service/passwordService";
+import passwordService from "../service/userServices/passwordService";
 
 const getUser = async (req: Request, res: Response) => {
   try{
