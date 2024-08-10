@@ -1,6 +1,6 @@
-import UserModel from '../database/models/userModel';
-import passwordService from '../service/passwordService';
-import loginAttemptService from '../service/loginAttemptService';
+import UserModel from '../../database/models/userModel';
+import passwordService from './passwordService';
+import loginAttemptService from './loginAttemptService';
 
 
 class AuthService {
