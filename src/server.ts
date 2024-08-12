@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import routes from './routes/router';
 import database from '../src/database/config/conn';
+import redisClient from './redisClient';
 
 dotenv.config();
 
@@ -11,6 +12,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(routes);
+
+redisClient.connect().then(() => {
+  console.log('Connected to Redis');
+}).catch(error => {
+  console.error('Unable to connect to Redis:', error);
+});
 
 database.sync().then(() => {
   console.log(`Database is connected: ${process.env.DB_NAME}`);
