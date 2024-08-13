@@ -15,7 +15,7 @@
       <input type="name" name="name" id="name" placeholder="Guilherme Gomes">
 
       <label for="email">Email</label>
-      <input type="email" name="email" id="email" placeholder="gguife747@gmail.com">
+      <input type="email" name="email" id="email" placeholder="gguifedev@gmail.com">
   
       <label for="password">Password</label>
       <input type="password" name="password" id="password" placeholder="********">
@@ -29,7 +29,6 @@
     </form>
 
     <div class="cards-msg">
-      <div class="verify-card"></div>
       <div class="error-card"></div>
     </div>
 
@@ -47,7 +46,6 @@
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       const confirmPasswordInput = document.getElementById('confirmPassword');
-      const verifyMsg = document.getElementsByClassName("verify-card")[0];
       const errorMsg = document.getElementsByClassName("error-card")[0];
 
       const data = {
@@ -67,14 +65,14 @@
 
       const validateFields = (data) => {
         if (!data.name || !data.email || !data.password || !confirmPasswordInput.value) {
-          displayMessage(errorMsg, 'Alls fields are required', 1500)
+          displayMessage(errorMsg, 'Alls fields are required', 3000)
           throw new Error('All fields are required.');
         }
       }
 
       const validatePassword = (password, confirmPassword) => {
         if (password !== confirmPassword) {
-          displayMessage(errorMsg, 'Passwords do not match.', 1500)
+          displayMessage(errorMsg, 'Passwords do not match.', 3000)
           throw new Error('Passwords do not match.');
         }
       }
@@ -98,7 +96,7 @@
 
       const handleSuccess = async (response) => {
         if(response.status === 201){
-          displayMessage(verifyMsg, 'Account created suscessfully!', 1500)
+          displayMessage(_, 'Account created suscessfully!', 3000)
           nameInput.value = '';
           emailInput.value = '';
           passwordInput.value = '';
@@ -113,8 +111,7 @@
       
       const handleError = (error) => {
         console.error('Error:', error);
-        displayMessage(errorMsg, error.message, 1500);
-        verifyMsg.style.display = 'none';
+        displayMessage(errorMsg, error.message, 3000);
       }
 
       async function createAccount(data) {

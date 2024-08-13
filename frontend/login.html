@@ -12,7 +12,7 @@
       <h1>Sign In</h1>
   
       <label for="">Email</label>
-      <input type="email" name="email" id="email" placeholder="gguife747@gmail.com">
+      <input type="email" name="email" id="email" placeholder="gguifedev@gmail.com">
   
       <label for="password">Password</label>
       <input type="password" name="password" id="password" placeholder="********">
@@ -68,8 +68,8 @@
 
         const validateFields = (data) => {
           if(!data.email || !data.password){
-            displayMessage(errorMsg, 'Alls fields are required', 1500);
-            throw new Error('Alls fields are required.');
+            displayMessage(errorMsg, 'Alls fields are required', 3000);
+            throw new Error('Alls fields are required');
           }
         }
 
@@ -85,7 +85,8 @@
 
             if (!response.ok) {
               const errorData = await response.json();
-              throw new Error(errorData.message || 'An error occurred');
+              console.log(errorData.error)
+              throw new Error(errorData.error);
             }
             
             return response
@@ -96,7 +97,7 @@
 
         const handleSuccess = async (response) => {
           if(response.status ==+ 200){
-            alert('Login was successful!');
+            window.location.href = 'home.html';
            } else {
             const errorData = await response.json();
             handleError(new Error(errorData.error))
@@ -105,7 +106,7 @@
 
         const handleError = (error) => {
           console.error('Error', error);
-          displayMessage(errorMsg, error.message, 1500);
+          displayMessage(errorMsg, error.message, 3000);
         }
 
         async function loginAccess() {
