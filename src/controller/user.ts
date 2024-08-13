@@ -45,7 +45,7 @@ const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated.' });
     }
 
-    res.status(200).json({ message: 'Login successful!', user: req.user });
+    res.status(200).json({ message: 'Login successful!', user: req.user});
   }catch(error){
     console.log("Error logging in:", error);
     return res.status(500).json({error: 'Error logging in.'})
