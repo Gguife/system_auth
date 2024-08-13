@@ -15,8 +15,6 @@ app.use(routes);
 
 redisClient.connect().then(() => {
   console.log('Connected to Redis');
-}).catch(error => {
-  console.error('Unable to connect to Redis:', error);
 });
 
 database.sync().then(() => {

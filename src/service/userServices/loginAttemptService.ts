@@ -1,29 +1,43 @@
+import { RateLimiterRedis } from "rate-limiter-flexible";
+import redisClient from "../../redisClient";
+
+
 class LoginAttemptService {
-  private failedLoginAttempts: { [key: string]: number } = {};
-  private lockoutTime: { [key: string]: number } = {};
-  private readonly maxAttempts: number = 5;
-  private readonly lockoutDuration: number = 30 * 60 * 1000;
+  private readonly maxWrongAttemptsByIPperMinute = 5;
+  private readonly maxWrongAttemptsByIPperDay = 50;
+  
+  private limiterFastBruteByIP = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'login_fail_ip_per_minute',
+    points: this.maxWrongAttemptsByIPperMinute,
+    duration: 60,
+  })
 
-  recordFailedAttempt(email: string): void {
-    this.failedLoginAttempts[email] = (this.failedLoginAttempts[email] || 0) + 1;
+  private limiterSlowBruteByIP = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'login_fail_ip_per_day',
+    points: this.maxWrongAttemptsByIPperDay,
+    duration: 60 * 60 * 24,
+    blockDuration: 60 * 60 * 24,
+  })
 
-    if (this.failedLoginAttempts[email] >= this.maxAttempts) {
-      this.lockoutTime[email] = Date.now() + this.lockoutDuration;
-    }
+
+  async isLockedOut(ipAddr: string): Promise<boolean>{
+    const resSlow = await this.limiterSlowBruteByIP.get(ipAddr);
+    return resSlow !== null && resSlow.consumedPoints > this.maxWrongAttemptsByIPperDay;
   }
 
-  isLockedOut(email: string): boolean {
-    const lockoutExpiration = this.lockoutTime[email];
-    if (lockoutExpiration && lockoutExpiration > Date.now()) {
-      return true;
+  async recordFailedAttempt(ipAddr: string): Promise<void> {
+    try{
+      await Promise.all([
+        this.limiterFastBruteByIP.consume(ipAddr, 1),
+        this.limiterSlowBruteByIP.consume(ipAddr, 1)
+      ])
+    }catch(rlRejected){
+      throw rlRejected;
     }
-    return false;
-  }
-
-  resetFailedAttempts(email: string): void {
-    delete this.failedLoginAttempts[email];
-    delete this.lockoutTime[email];
   }
 }
+
 
 export default new LoginAttemptService();
