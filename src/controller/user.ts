@@ -47,7 +47,7 @@ const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated.' });
     }
 
-    const payload = {id: req.user.id};
+    const payload = {id: req.user.id, name: req.user.name, email: req.user.email};
 
    const token = jsonwebtoken.sign(
     {user: JSON.stringify(payload)},
@@ -55,7 +55,7 @@ const loginUser = async (req: Request, res: Response) => {
     {expiresIn: '60m'}
    )
   
-    res.status(200).json({ message: 'Login successful!', token, user: {name: req.user.name, email: req.user.email}});
+    res.status(200).json({ message: 'Login successful!', token, user: req.user});
   }catch(error){
     console.log("Error logging in:", error);
     return res.status(500).json({error: 'Error logging in.'})
