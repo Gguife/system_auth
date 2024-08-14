@@ -10,7 +10,7 @@ router.post('/account/create', user.createUser);
 router.post('/login', authtenticateUser, user.loginUser);
 
 router.get('/private', authtenticateToken, (req: Request, res: Response) => {
-  res.send(`Hello ${req.user?.name}`)
-})
+  res.json(req.user);
+});
 
 export default router;
