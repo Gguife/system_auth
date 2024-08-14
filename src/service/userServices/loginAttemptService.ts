@@ -42,7 +42,7 @@ class LoginAttemptService {
           details: error
         });
       } else {
-        console.error("Unexpected error during authentication:", error);
+        console.error("Unexpected error during authentication:", {error});
       }
     }
   }

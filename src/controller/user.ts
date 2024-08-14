@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import UserModel from "../database/models/userModel";
 import passwordService from "../service/userServices/passwordService";
+import jsonwebtoken from "jsonwebtoken"; 
+import { SECRET_KEY } from "../middlewares/jwtMiddleware";
 
 const getUser = async (req: Request, res: Response) => {
   try{
@@ -40,12 +42,20 @@ const createUser = async (req: Request, res: Response) => {
 
 
 const loginUser = async (req: Request, res: Response) => {
-  try{
+  try{ 
     if (!req.user) {
       return res.status(401).json({ error: 'User not authenticated.' });
     }
 
-    res.status(200).json({ message: 'Login successful!', user: req.user});
+    const payload = {id: req.user.id, name: req.user.name, email: req.user.email};
+
+   const token = jsonwebtoken.sign(
+    {user: JSON.stringify(payload)},
+    SECRET_KEY,
+    {expiresIn: '60m'}
+   )
+  
+    res.status(200).json({ message: 'Login successful!', token, user: req.user});
   }catch(error){
     console.log("Error logging in:", error);
     return res.status(500).json({error: 'Error logging in.'})

@@ -43,85 +43,91 @@
     <p class="sign-pages">Haven't signed up yet? <a href="./cadastro.html">Register</a></p>
 
     <footer>@gguife</footer>
-
-    <script>
-      document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const errorMsg = document.getElementsByClassName("error-card")[0];
-
-        const data = {
-          email: emailInput.value,
-          password: passwordInput.value
-        }
-
-        const displayMessage = (element, message, displayTime) => {
-          element.textContent = message;
-          element.style.display = 'flex';
-
-          setTimeout(() => {
-            element.style.display = 'none';
-          }, displayTime)
-        }
-
-        const validateFields = (data) => {
-          if(!data.email || !data.password){
-            displayMessage(errorMsg, 'Alls fields are required', 3000);
-            throw new Error('Alls fields are required');
-          }
-        }
-
-        const sendLoginRequest = async () => {
-          try{
-            const response = await fetch('http://localhost:8080/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              console.log(errorData.error)
-              throw new Error(errorData.error);
-            }
-            
-            return response
-          }catch(error){
-            handleError(error);
-          }
-        }
-
-        const handleSuccess = async (response) => {
-          if(response.status ==+ 200){
-            window.location.href = 'home.html';
-           } else {
-            const errorData = await response.json();
-            handleError(new Error(errorData.error))
-           }
-        }
-
-        const handleError = (error) => {
-          console.error('Error', error);
-          displayMessage(errorMsg, error.message, 3000);
-        }
-
-        async function loginAccess() {
-          try{
-            validateFields(data);
-            const response = await sendLoginRequest(data);
-            handleSuccess(response);
-          }catch(e){
-            handleError(e);
-          }
-        }
-
-        loginAccess();
-      })
-    </script>
   </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const errorMsg = document.getElementsByClassName("error-card")[0];
+  
+      const data = {
+        email: emailInput.value,
+        password: passwordInput.value
+      };
+  
+      const displayMessage = (element, message, displayTime) => {
+        element.textContent = message;
+        element.style.display = 'flex';
+  
+        setTimeout(() => {
+          element.style.display = 'none';
+        }, displayTime);
+      };
+  
+      const validateFields = (data) => {
+        if (!data.email || !data.password) {
+          displayMessage(errorMsg, 'All fields are required', 3000);
+          throw new Error('All fields are required');
+        }
+      };
+  
+      const sendLoginRequest = async () => {
+        try {
+          const response = await fetch('http://localhost:8080/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+  
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Unknown error occurred');
+          }
+  
+          return response;
+        } catch (error) {
+          handleError(error);
+        }
+      };
+  
+      const handleSuccess = async (response) => {
+        if (response.ok) {
+          const responseData = await response.json();
+          const { token } = responseData;
+  
+          if (token) {
+            localStorage.setItem('token', token);
+            window.location.href = 'home.html';
+          } else {
+            handleError(new Error('Token not received'));
+          }
+        } else {
+          const errorData = await response.json();
+          handleError(new Error(errorData.error));
+        }
+      };
+  
+      const handleError = (error) => {
+        console.error('Error:', error);
+        displayMessage(errorMsg, error.message, 3000);
+      };
+  
+      async function loginAccess() {
+        try {
+          validateFields(data);
+          const response = await sendLoginRequest();
+          await handleSuccess(response);
+        } catch (e) {
+          handleError(e);
+        }
+      }
+  
+      loginAccess();
+    });
+  </script>
 </body>
 </html>
