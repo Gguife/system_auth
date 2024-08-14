@@ -4,7 +4,7 @@ import UserModel from '../database/models/userModel';
 import passwordService from '../service/userServices/passwordService';
 
 
-export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const authtenticateUser = async (req: Request, res: Response, next: NextFunction) => {
   try{
     const { email, password } = req.body;
     const ipAddr = req.socket.remoteAddress || 'unknown-ip';
@@ -14,6 +14,9 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
+    if (await LoginAttemptService.isLockedOut(ipAddr)) {
+      return res.status(429).json({ error: 'Too many login attempts. Please try again later.' });
+    }
 
     if (!user) throw new Error("User not found.");
     
@@ -21,10 +24,6 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
     if (!isMatch) {
       await LoginAttemptService.recordFailedAttempt(ipAddr);
       res.status(401).json({error: 'Invalid credentials!'});
-    }
-
-    if (await LoginAttemptService.isLockedOut(ipAddr)) {
-      return res.status(429).json({ error: 'Too many login attempts. Please try again later.' });
     }
 
     req.user = user; 

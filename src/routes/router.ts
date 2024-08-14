@@ -1,11 +1,16 @@
-import { Router } from "express";
+import { Router, Response, Request } from "express";
 import user from "../controller/user";
-import { authenticateUser } from "../middlewares/authMiddleware";
+import { authtenticateUser } from "../middlewares/authMiddleware";
+import { authtenticateToken } from "../middlewares/jwtMiddleware";
 
 const router = Router();
 
 router.get('/user/:id', user.getUser);
 router.post('/account/create', user.createUser);
-router.post('/login', authenticateUser, user.loginUser);
+router.post('/login', authtenticateUser, user.loginUser);
+
+router.get('/private', authtenticateToken, (req: Request, res: Response) => {
+  res.send(`Hello ${req.user?.name}`)
+})
 
 export default router;
