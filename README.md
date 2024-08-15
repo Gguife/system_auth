@@ -22,6 +22,8 @@
 - Sequelize
 - Typescript
 - Docker compose
+- Redis
+- JWT
 
 <h2 id="started">🚀 Getting started</h2>
 
@@ -71,10 +73,8 @@ How to start project
 ​
 | route               | Model     | Description                                     
 |----------------------|-----------------------------|------------------------
-| <kbd>GET /users</kbd>     | <strong>users</strong>    | See all users
 | <kbd>GET /account/:id</kbd>     | <strong>users</strong>    | See user by their id
 | <kbd>POST /account/create</kbd>    | <strong>users</strong>    | Create user
-| <kbd>PUT /account/update/:id</kbd> | <strong>users</strong>    | Update user
 | <kbd>DELETE /account/remove/:id</kbd> | <strong>users</strong>    | Remove user
 | <kbd>POST /login</kbd>    | <strong>users</strong>    | Account access
 
