@@ -12,10 +12,10 @@
       <h1>Sign In</h1>
   
       <label for="">Email</label>
-      <input type="email" name="email" id="email" placeholder="gguifedev@gmail.com">
+      <input type="email" name="email" id="email" >
   
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" placeholder="********">
+      <input type="password" name="password" id="password" >
 
       <button class="login-button" type="submit">Next</button>      
       
@@ -82,10 +82,10 @@
             },
             body: JSON.stringify(data)
           });
-  
-          if (!response.ok) {
+
+          if (!response.status >= 400) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Unknown error occurred');
+            throw new Error(errorData.error);
           }
   
           return response;
@@ -93,12 +93,12 @@
           handleError(error);
         }
       };
-  
+      
       const handleSuccess = async (response) => {
         if (response.ok) {
           const responseData = await response.json();
           const { token } = responseData;
-  
+
           if (token) {
             localStorage.setItem('token', token);
             window.location.href = 'home.html';

@@ -20,6 +20,11 @@ const getUser = async (req: Request, res: Response) => {
 const createUser = async (req: Request, res: Response) => {
   try{
     const { name, email, password } = req.body;
+    const emailDB = await UserModel.findOne({ where: { email } });
+
+    if(emailDB){
+      return res.status(409).json({error: "User already exists"})
+    }
 
     if(!passwordService.validatePassword(password)){
       return res.status(400).json({error: 'Password is not strong enough.'})
@@ -44,16 +49,16 @@ const createUser = async (req: Request, res: Response) => {
 const loginUser = async (req: Request, res: Response) => {
   try{ 
     if (!req.user) {
-      return res.status(401).json({ error: 'User not authenticated.' });
+      return res.status(401).json({ error: 'Invalid Credentials.' });
     }
 
     const payload = {id: req.user.id, name: req.user.name, email: req.user.email};
 
-   const token = jsonwebtoken.sign(
-    {user: JSON.stringify(payload)},
-    SECRET_KEY,
-    {expiresIn: '60m'}
-   )
+    const token = jsonwebtoken.sign(
+      {user: JSON.stringify(payload)},
+      SECRET_KEY,
+      {expiresIn: '60m'}
+    )
   
     res.status(200).json({ message: 'Login successful!', token, user: req.user});
   }catch(error){
