@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsnd --respawn src/server.ts",
+    "test": "jest",
     "build": "tsc",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "seuqelize db:migrate:undo"
