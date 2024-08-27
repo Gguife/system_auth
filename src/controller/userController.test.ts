@@ -2,9 +2,13 @@ import { Request, Response } from "express";
 import userController from "./user";
 import UserModel from "../database/models/userModel";
 import PasswordService from "../service/userServices/passwordService";
+import jsonwebtoken from "jsonwebtoken";
 
 jest.mock("../database/models/userModel");
 jest.mock("../service/userServices/passwordService");
+jest.mock("jsonwebtoken", () => ({
+  sign: jest.fn(),
+}));
 
 function createMockReqRes() {
   return {
@@ -114,5 +118,57 @@ describe("User Controller Tests", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Error adding user.' });
     });
+  });
+
+  describe("login user controller", () => {
+    let req: Request;
+    let res: Response;
+    const SECRET_KEY = process.env.SCECRET_KEY as string;
+
+    beforeEach(() => {
+      req = {} as Request;
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      } as unknown as Response;
+    });
+
+    it("should return 401 if user is not authenticated", async () => {
+      req.user = undefined;
+
+      await userController.loginUser(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({error: "Invalid Credentials."});
+    });
+
+    it("should return 200 and a token if login is successful", async () => {
+      req.user = {id: 1, name: "Test User", email: "test@example.com"} as UserModel;
+
+      (jsonwebtoken.sign as jest.Mock).mockReturnValue("mockedToken");
+
+      await userController.loginUser(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Login successful!',
+        token: "mockedToken",
+        user: req.user
+      });
+    });
+
+    it("should return 500 if an error occurs during login", async () => {
+      req.user = { id: 1, name: "Test User", email: "test@example.com" } as UserModel;
+  
+      (jsonwebtoken.sign as jest.Mock).mockImplementation(() => {
+        throw new Error("Token generation error");
+      });
+  
+      await userController.loginUser(req, res);
+  
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Error logging in.' });
+    });
+
   });
 });
