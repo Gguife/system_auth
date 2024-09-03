@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userController from "./user";
+import userController from "../controller/user";
 import UserModel from "../database/models/userModel";
 import PasswordService from "../service/userServices/passwordService";
 import jsonwebtoken from "jsonwebtoken";
